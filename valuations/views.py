@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout 
 from .forms import SignupForm, LoginForm
 from django.contrib.auth.forms import AuthenticationForm
-
-
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 #Home page
@@ -16,6 +16,8 @@ def user_signup(request):
         form = SignupForm(request.POST)
         if form.is_valid():
             form.save()
+            user = form.changed_data.get('username')
+            messages.success(request, f'Account created for {user}')
             return redirect('login')
         
     else:
@@ -31,7 +33,7 @@ def user_login(request):
                 login(request, user)
                 return redirect('home')
             else:
-                # Handle invalid login attempt (e.g., display error message)
+                messages.info(request, 'invalid login attempt')
                 pass
         else:
             # Handle form validation errors (e.g., display form errors)
